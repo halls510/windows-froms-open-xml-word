@@ -25,7 +25,7 @@ namespace WindowsFormsAppOpenXML
             var c = collection.Where(w => w.Codigo == Codigo).FirstOrDefault();
             if(c != null)
             {
-                c.pessoas.Add(pessoa);
+                c.Pessoas.Add(pessoa);
             }
         }
 

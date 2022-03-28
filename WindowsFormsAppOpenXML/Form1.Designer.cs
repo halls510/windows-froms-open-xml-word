@@ -48,6 +48,7 @@ namespace WindowsFormsAppOpenXML
             this.Btn_AddRegiao = new System.Windows.Forms.Button();
             this.Lbl_AddRegiao = new System.Windows.Forms.Label();
             this.Btn_AddPessoaInRegion = new System.Windows.Forms.Button();
+            this.Wbr_Content = new System.Windows.Forms.WebBrowser();
             this.SuspendLayout();
             // 
             // Txt_Name
@@ -92,7 +93,7 @@ namespace WindowsFormsAppOpenXML
             this.Rtx_Conteudo.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Rtx_Conteudo.Location = new System.Drawing.Point(573, 27);
             this.Rtx_Conteudo.Name = "Rtx_Conteudo";
-            this.Rtx_Conteudo.Size = new System.Drawing.Size(603, 600);
+            this.Rtx_Conteudo.Size = new System.Drawing.Size(603, 274);
             this.Rtx_Conteudo.TabIndex = 10;
             this.Rtx_Conteudo.Text = "";
             // 
@@ -209,11 +210,20 @@ namespace WindowsFormsAppOpenXML
             this.Btn_AddPessoaInRegion.UseVisualStyleBackColor = true;
             this.Btn_AddPessoaInRegion.Click += new System.EventHandler(this.Btn_AddPessoaInRegion_Click);
             // 
+            // Wbr_Content
+            // 
+            this.Wbr_Content.Location = new System.Drawing.Point(573, 342);
+            this.Wbr_Content.MinimumSize = new System.Drawing.Size(20, 20);
+            this.Wbr_Content.Name = "Wbr_Content";
+            this.Wbr_Content.Size = new System.Drawing.Size(603, 285);
+            this.Wbr_Content.TabIndex = 23;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1188, 660);
+            this.Controls.Add(this.Wbr_Content);
             this.Controls.Add(this.Btn_AddPessoaInRegion);
             this.Controls.Add(this.Btn_AddRegiao);
             this.Controls.Add(this.Combo_Regiao);
@@ -259,6 +269,7 @@ namespace WindowsFormsAppOpenXML
         private System.Windows.Forms.Button Btn_AddRegiao;
         private System.Windows.Forms.Label Lbl_AddRegiao;
         private System.Windows.Forms.Button Btn_AddPessoaInRegion;
+        private System.Windows.Forms.WebBrowser Wbr_Content;
     }
 }
 

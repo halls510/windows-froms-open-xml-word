@@ -42,6 +42,7 @@ namespace WindowsFormsAppOpenXML
                 var newDoc = (WordprocessingDocument)wordDocument.Clone(FilePathDestination, true);
                 newDoc.Save();
                 newDoc.Close();
+                wordDocument.Close();
             }
         }
 
@@ -51,6 +52,55 @@ namespace WindowsFormsAppOpenXML
             using (WordprocessingDocument wordDocument = WordprocessingDocument.Open(namedestiantion, true))
             {
                 wordDocument.MainDocumentPart.Document.FindReplace("<name>", Txt_Name.Text);
+
+                wordDocument.Save();
+                wordDocument.Close();
+            }
+        }
+
+        private void ReplaceDocumentRegionTest()
+        {
+            string namedestiantion = Txt_FilePathDestination.Text + "\\" + Txt_NameFileDestination.Text + ".docx";
+            using (WordprocessingDocument wordDocument = WordprocessingDocument.Open(namedestiantion, true))
+            {
+
+                // para primeiro item da região sem repetição
+                foreach (var regiao in _regionCustom.Get())
+                {
+                    List<ParagraphCustom> paragraphs = new List<ParagraphCustom>();
+                    paragraphs = wordDocument.MainDocumentPart.Document.FindRegionTest(regiao.Region);                  
+                    regiao.AddParagraphRange(paragraphs);
+                    var pr = regiao.RemoveTextNoRegion();
+                    regiao.AddParagraphRange(pr);
+
+                    if (regiao.Pessoas.Count > 0)
+                    {
+                        var pessoa = regiao.Pessoas[0];                  
+                        wordDocument.MainDocumentPart.Document.FindReplaceRegionContentTest(regiao.ParaghapsCustom, "<name>", pessoa.name, regiao.Region);
+                    }
+                }
+
+                // para demais repetições do conteúdo das regiões, subtraindo o primeiro item da lista de pessoas se houver
+                foreach (var regiao in _regionCustom.Get())
+                {
+                    for (int k = 1; k < regiao.Pessoas.Count(); k++)
+                    {
+                        var pessoa = regiao.Pessoas[k];                       
+                        var p = FindXml.FindReplaceRegionContentTest(regiao.ParaghapsCustom, "<name>", pessoa.name, regiao.Region);
+                        var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindRegionReplaceTrue(regiao.Region);
+                        var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
+                        //wordDocument.MainDocumentPart.Document.Body.InsertAfter<Paragraph>(); // verificar
+                        var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, lastRegionReplace);
+                        wordDocument.MainDocumentPart.Document.RemoveParagraphs();
+                        wordDocument.MainDocumentPart.Document.AddParagraphs(papragraphsInsert);
+                    }
+                }
+
+                // remove marcação de região
+                foreach (var regiao in _regionCustom.Get())
+                {
+                    wordDocument.MainDocumentPart.Document.FindReplaceRegionTest(regiao.Region);
+                }
 
                 wordDocument.Save();
                 wordDocument.Close();
@@ -77,7 +127,7 @@ namespace WindowsFormsAppOpenXML
                         Body body = new Body();
                         foreach (var item in texts.Get())
                         {
-                            body.AppendChild(new Paragraph(new Run ( new Text (item.Text.Text))));
+                            body.AppendChild(new Paragraph(new Run(new Text(item.Text.Text))));
                         }
 
                         wordDocument.MainDocumentPart.Document.AppendChild(body);
@@ -86,14 +136,14 @@ namespace WindowsFormsAppOpenXML
                         texts = wordDocument.MainDocumentPart.Document.FindRegion(regiao.Region);
                     }
 
-                    foreach (var pessoa in regiao.pessoas)
+                    foreach (var pessoa in regiao.Pessoas)
                     {
                         wordDocument.MainDocumentPart.Document.FindReplaceRegion(texts, "<name>", pessoa.name);
                     }
 
                     i++;
-                }   
-               
+                }
+
 
                 wordDocument.Save();
                 wordDocument.Close();
@@ -123,18 +173,35 @@ namespace WindowsFormsAppOpenXML
             }
         }
 
+        private void ViewDocumentTest(string filePath)
+        {
+            var alltext = "";
+            var allXml = "";
+            using (WordprocessingDocument wordDocument = WordprocessingDocument.Open(filePath, false))
+            {
+                alltext = wordDocument.MainDocumentPart.Document.AllText();
+                allXml = wordDocument.MainDocumentPart.Document.InnerXml;
+               // wordDocument.Close();
+                wordDocument.Dispose();
+            }
+
+            Rtx_Conteudo.Text = alltext;
+
+            Wbr_Content.DocumentText = allXml;
+        }
+
         private void Btn_Aplicar_Click(object sender, EventArgs e)
         {
             try
             {
                 SetClone();
-                ReplaceDocumentRegion();
+                ReplaceDocumentRegionTest();
                 MessageBox.Show("Aplicado");
 
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro");
+                MessageBox.Show("Erro:: " + ex.Message);
             }
         }
 
@@ -144,17 +211,18 @@ namespace WindowsFormsAppOpenXML
             {
                 string namedestiantion = Txt_FilePathDestination.Text + "\\" + Txt_NameFileDestination.Text + ".docx";
 
-                ViewDocument(namedestiantion);
+                ViewDocumentTest(namedestiantion);
             }
             else if (Txt_NameFileOrigin.Text != "")
             {
-                ViewDocument(Txt_NameFileOrigin.Text);
+                ViewDocumentTest(Txt_NameFileOrigin.Text);
             }
         }
 
         private void SetClone()
         {
             Rtx_Conteudo.Text = "";
+            Wbr_Content.DocumentText = "";
             string namedestiantion = Txt_FilePathDestination.Text + "\\" + Txt_NameFileDestination.Text + ".docx";
             CloneDocument(Txt_NameFileOrigin.Text, namedestiantion);
         }
@@ -215,11 +283,11 @@ namespace WindowsFormsAppOpenXML
 
         private void Btn_AddPessoaInRegion_Click(object sender, EventArgs e)
         {
-           
-                RegionCustom ItemSelecionado = (RegionCustom)Combo_Regiao.Items[Combo_Regiao.SelectedIndex];
 
-                _regionCustom.AddPessoa(ItemSelecionado.Codigo, new Pessoa { name = Txt_Name.Text });
-           
+            RegionCustom ItemSelecionado = (RegionCustom)Combo_Regiao.Items[Combo_Regiao.SelectedIndex];
+
+            _regionCustom.AddPessoa(ItemSelecionado.Codigo, new Pessoa { name = Txt_Name.Text });
+
         }
     }
 }
