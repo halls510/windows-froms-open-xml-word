@@ -63,44 +63,67 @@ namespace WindowsFormsAppOpenXML
             string namedestiantion = Txt_FilePathDestination.Text + "\\" + Txt_NameFileDestination.Text + ".docx";
             using (WordprocessingDocument wordDocument = WordprocessingDocument.Open(namedestiantion, true))
             {
-
                 // para primeiro item da região sem repetição
                 foreach (var regiao in _regionCustom.Get())
                 {
                     List<ParagraphCustom> paragraphs = new List<ParagraphCustom>();
-                    paragraphs = wordDocument.MainDocumentPart.Document.FindRegionTest(regiao.Region);                  
-                    regiao.AddParagraphRange(paragraphs);
-                    var pr = regiao.RemoveTextNoRegion();
-                    regiao.AddParagraphRange(pr);
+                    paragraphs = wordDocument.MainDocumentPart.Document.FindRegionAndRemoveParagraphComplex(regiao.Region);
+                    regiao.AddParagraphRangeComplex(paragraphs);
 
-                    if (regiao.Pessoas.Count > 0)
-                    {
-                        var pessoa = regiao.Pessoas[0];                  
-                        wordDocument.MainDocumentPart.Document.FindReplaceRegionContentTest(regiao.ParaghapsCustom, "<name>", pessoa.name, regiao.Region);
-                    }
-                }
+                    int totalPessoas = regiao.Pessoas.Count();
+                    int lastPessoa = totalPessoas - 1;
 
-                // para demais repetições do conteúdo das regiões, subtraindo o primeiro item da lista de pessoas se houver
-                foreach (var regiao in _regionCustom.Get())
-                {
-                    for (int k = 1; k < regiao.Pessoas.Count(); k++)
+                    for (int i = 0; i < totalPessoas; i++)
                     {
-                        var pessoa = regiao.Pessoas[k];                       
-                        var p = FindXml.FindReplaceRegionContentTest(regiao.ParaghapsCustom, "<name>", pessoa.name, regiao.Region);
-                        var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindRegionReplaceTrue(regiao.Region);
-                        var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
-                        //wordDocument.MainDocumentPart.Document.Body.InsertAfter<Paragraph>(); // verificar
-                        var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, lastRegionReplace);
-                        wordDocument.MainDocumentPart.Document.RemoveParagraphs();
-                        wordDocument.MainDocumentPart.Document.AddParagraphs(papragraphsInsert);
-                    }
-                }
+                        var pessoa = regiao.Pessoas[i];
+
+                        // se existe uma pessoa add Custom Full
+                        if (totalPessoas == 1)
+                        {
+                            var p = FindXml.FindReplaceRegionContentTest(regiao.ParagraphCustomFull, "<name>", pessoa.name, regiao.Region);
+                            var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
+                            var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, regiao.PositionInitial);
+                            wordDocument.MainDocumentPart.Document.RemoveParagraphs();
+                            wordDocument.MainDocumentPart.Document.AddParagraphs(papragraphsInsert);
+                        }
+                        else if (totalPessoas > 1)
+                        {
+                            if (i != lastPessoa && i != 0)
+                            {
+                                var p = FindXml.FindReplaceRegionContentTest(regiao.ParagraphCustomMiddle, "<name>", pessoa.name, regiao.Region);
+                                var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindRegionReplaceTrue(regiao.Region);
+                                var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
+                                var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, lastRegionReplace);
+                                wordDocument.MainDocumentPart.Document.RemoveParagraphs();
+                                wordDocument.MainDocumentPart.Document.AddParagraphs(papragraphsInsert);
+                            }
+                            else if (i == 0)
+                            {
+                                var p = FindXml.FindReplaceRegionContentTest(regiao.ParagraphCustomBefore, "<name>", pessoa.name, regiao.Region);
+                                //var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindRegionReplaceTrue(regiao.Region);
+                                var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
+                                var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, regiao.PositionInitial);
+                                wordDocument.MainDocumentPart.Document.RemoveParagraphs();
+                                wordDocument.MainDocumentPart.Document.AddParagraphs(papragraphsInsert);
+                            }
+                            else if (i == lastPessoa)
+                            {
+                                var p = FindXml.FindReplaceRegionContentTest(regiao.ParagraphCustomAfter, "<name>", pessoa.name, regiao.Region);
+                                var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindRegionReplaceTrue(regiao.Region);
+                                var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
+                                var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, lastRegionReplace);
+                                wordDocument.MainDocumentPart.Document.RemoveParagraphs();
+                                wordDocument.MainDocumentPart.Document.AddParagraphs(papragraphsInsert);
+                            }
+                        }
+                    } 
+                }                
 
                 // remove marcação de região
-                foreach (var regiao in _regionCustom.Get())
-                {
-                    wordDocument.MainDocumentPart.Document.FindReplaceRegionTest(regiao.Region);
-                }
+                //foreach (var regiao in _regionCustom.Get())
+                //{
+                //    wordDocument.MainDocumentPart.Document.FindReplaceRegionTest(regiao.Region);
+                //}
 
                 wordDocument.Save();
                 wordDocument.Close();
@@ -181,7 +204,7 @@ namespace WindowsFormsAppOpenXML
             {
                 alltext = wordDocument.MainDocumentPart.Document.AllText();
                 allXml = wordDocument.MainDocumentPart.Document.InnerXml;
-               // wordDocument.Close();
+                // wordDocument.Close();
                 wordDocument.Dispose();
             }
 

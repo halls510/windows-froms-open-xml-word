@@ -147,6 +147,63 @@ namespace WindowsFormsAppOpenXML
             return collection;
         }
 
+        #region RegionComplex
+
+        public static List<ParagraphCustom> FindRegionAndRemoveParagraphComplex(this Document document, string search)
+        {
+            List<ParagraphCustom> collection = new List<ParagraphCustom>();
+
+            string openTag = "<r-" + search + ">";
+            string closeTag = "</r-" + search + ">";
+
+            int countStart = 0;
+            int countFinish = 0;
+            int i = 0;
+
+            List<int> removes = new List<int>();
+
+            foreach (Paragraph paragraph in document.Descendants<Paragraph>())
+            {
+                var texts = paragraph.Descendants<Text>();
+                foreach (var text in texts)
+                {
+                    if (text.Text.Contains(openTag))
+                    {
+                        countStart++;
+                    }
+
+                    if (text.Text.Contains(closeTag))
+                    {
+                        countFinish++;
+                    }
+                }
+
+                if (countStart == 1)
+                {
+                    ParagraphCustom paragraphCustom = new ParagraphCustom();
+                    paragraphCustom.Clone(i, paragraph);
+                    collection.Add(paragraphCustom);
+                    removes.Add(i);
+                }
+
+                if (countFinish == 1)
+                {
+                    break;
+                }
+                i++;
+            }
+
+            var paragraphsDocuments = document.Descendants<Paragraph>().ToList();
+            foreach (var remove in removes)
+            {
+                paragraphsDocuments[remove].Remove();
+            }
+
+            return collection;
+        }
+
+        #endregion
+
         public static List<ParagraphCustom> RemoveTextNoRegion(this RegionCustom regionCustom)
         {
             List<ParagraphCustom> collection = new List<ParagraphCustom>();
@@ -161,16 +218,16 @@ namespace WindowsFormsAppOpenXML
             {
                 var texts = pc.Paragraph.Descendants<Text>();
                 foreach (var text in texts)
-                {                  
+                {
                     if (text.Text.Contains(openTag))
                     {
-                        removeBefore = false;                       
+                        removeBefore = false;
                     }
 
                     if (removeBefore == true)
                     {
                         text.Remove();
-                       
+
                     }
 
                     if (removeAfter == true)
@@ -192,7 +249,7 @@ namespace WindowsFormsAppOpenXML
             return collection;
         }
 
-     
+
 
         public static int? FindRegionReplaceTrue(this Document document, string search)
         {
@@ -405,10 +462,10 @@ namespace WindowsFormsAppOpenXML
                 int g = 0;
                 for (int i = 0; i < countParamParagraphsCustom; i++)
                 {
-                    var item = paramParagraphsCustom[i];
-                    ParagraphCustom paragraphCustom = new ParagraphCustom();
-                    paragraphCustom.Clone(g, item.Paragraph);
-                    collecion.Add(paragraphCustom);
+                    //var item = paramParagraphsCustom[i];
+                    //ParagraphCustom paragraphCustom = new ParagraphCustom();
+                    //paragraphCustom.Clone(g, item.Paragraph);
+                    //collecion.Add(paragraphCustom);
 
                     if (i == startPosition)
                     {
@@ -421,6 +478,12 @@ namespace WindowsFormsAppOpenXML
                             collecion.Add(paragraphCustom_j);
                         }
                     }
+
+                    var item = paramParagraphsCustom[i];
+                    ParagraphCustom paragraphCustom = new ParagraphCustom();
+                    paragraphCustom.Clone(g, item.Paragraph);
+                    collecion.Add(paragraphCustom);
+
                     g++;
                 }
 
