@@ -1,0 +1,14 @@
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\bin\Debug\WindowsFormsAppOpenXML.exe.config
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\bin\Debug\WindowsFormsAppOpenXML.exe
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\bin\Debug\WindowsFormsAppOpenXML.pdb
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\bin\Debug\DocumentFormat.OpenXml.dll
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\bin\Debug\System.IO.Packaging.dll
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\bin\Debug\DocumentFormat.OpenXml.xml
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\obj\Debug\WindowsFormsAppOpenXML.Properties.Resources.resources
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\obj\Debug\WindowsFormsAppOpenXML.csproj.GenerateResource.cache
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\obj\Debug\WindowsFormsAppOpenXML.csproj.CoreCompileInputs.cache
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\obj\Debug\WindowsFormsAppOpenXML.csproj.CopyComplete
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\obj\Debug\WindowsFormsAppOpenXML.exe
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\obj\Debug\WindowsFormsAppOpenXML.pdb
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\obj\Debug\WindowsFormsAppOpenXML.Form1.resources
+D:\source\repos\TREINAMENTO_WINDOWS_FORMS\PROJETOS\DOC\WindowsFormsAppOpenXML\WindowsFormsAppOpenXML\obj\Debug\WindowsFormsAppOpenXML.csproj.AssemblyReference.cache
