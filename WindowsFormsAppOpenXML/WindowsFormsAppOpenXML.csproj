@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionRegionCustom.cs" />
+    <Compile Include="Dictionary.cs" />
     <Compile Include="FindXml.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

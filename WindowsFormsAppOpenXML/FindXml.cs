@@ -193,10 +193,24 @@ namespace WindowsFormsAppOpenXML
                 i++;
             }
 
-            var paragraphsDocuments = document.Descendants<Paragraph>().ToList();
-            foreach (var remove in removes)
+            var docs = document.Descendants<Paragraph>();
+            var t = docs.Count();
+            //for (int k = 0; k <= docs.Count(); k++)
+            //{
+            //    var c = removes.Contains(k);
+            //    if (c == true)
+            //    {
+            //        docs.ElementAt<Paragraph>(k).Remove();
+            //    }
+            //}
+
+            for (int l = docs.Count() - 1; l >= 0; l--)
             {
-                paragraphsDocuments[remove].Remove();
+                var c = removes.Contains(l);
+                if (c == true)
+                {
+                    docs.ElementAt<Paragraph>(l).Remove();
+                }
             }
 
             return collection;
@@ -250,7 +264,36 @@ namespace WindowsFormsAppOpenXML
         }
 
 
+        public static int? FindPositionRegionReplaceTrue(this Document document, string search)
+        {
+            int? result = null;
 
+            string closeTag = "</r-" + search + " replace=\"true\">";
+
+            int countFinish = 0;
+            int i = 0;
+
+            foreach (Paragraph paragraph in document.Descendants<Paragraph>())
+            {
+                var texts = paragraph.Descendants<Text>();
+                foreach (var text in texts)
+                {
+                    if (text.Text.Contains(closeTag))
+                    {
+                        countFinish = 1;
+                    }
+                }
+
+                if (countFinish == 1)
+                {
+                    result = i + 1;
+                    countFinish = 0;
+                }
+
+                i++;
+            }
+            return result;
+        }
         public static int? FindRegionReplaceTrue(this Document document, string search)
         {
             int? result = null;
@@ -275,6 +318,30 @@ namespace WindowsFormsAppOpenXML
                 {
                     result = i;
                     countFinish = 0;
+                }
+
+                i++;
+            }
+            return result;
+        }
+
+        public static int? FindPositionRegion(this Document document, string search)
+        {
+            int? result = null;
+
+            string openTag = "<r-" + search + ">";
+
+            int i = 0;
+
+            foreach (Paragraph paragraph in document.Descendants<Paragraph>())
+            {
+                var texts = paragraph.Descendants<Text>();
+                foreach (var text in texts)
+                {
+                    if (text.Text.Contains(openTag))
+                    {
+                        result = i;
+                    }
                 }
 
                 i++;
@@ -460,7 +527,7 @@ namespace WindowsFormsAppOpenXML
                 //int total = countParamParagraphsCustom + countParagraphsNovos;
 
                 int g = 0;
-                for (int i = 0; i < countParamParagraphsCustom; i++)
+                for (int i = 0; i <= countParamParagraphsCustom; i++)
                 {
                     //var item = paramParagraphsCustom[i];
                     //ParagraphCustom paragraphCustom = new ParagraphCustom();
@@ -471,20 +538,39 @@ namespace WindowsFormsAppOpenXML
                     {
                         for (int j = 0; j < countParagraphsNovos; j++)
                         {
-                            g++;
-                            var item_j = paragraphsNovos[j];
-                            ParagraphCustom paragraphCustom_j = new ParagraphCustom();
-                            paragraphCustom_j.Clone(g, item_j.Paragraph);
-                            collecion.Add(paragraphCustom_j);
+                            var t_paragraphsNovos = paragraphsNovos.ElementAtOrDefault<ParagraphCustom>(j);
+                            if (t_paragraphsNovos != null)
+                            {
+                                var item_j = t_paragraphsNovos;
+                                ParagraphCustom paragraphCustom_j = new ParagraphCustom();
+                                paragraphCustom_j.Clone(g, item_j.Paragraph);
+                                collecion.Add(paragraphCustom_j);
+                                g++;
+                            }
                         }
                     }
 
-                    var item = paramParagraphsCustom[i];
-                    ParagraphCustom paragraphCustom = new ParagraphCustom();
-                    paragraphCustom.Clone(g, item.Paragraph);
-                    collecion.Add(paragraphCustom);
-
+                    var t_paramParagraphsCustom = paramParagraphsCustom.ElementAtOrDefault<ParagraphCustom>(i);
+                    if (t_paramParagraphsCustom != null)
+                    {
+                        var item = t_paramParagraphsCustom;
+                        ParagraphCustom paragraphCustom = new ParagraphCustom();
+                        paragraphCustom.Clone(g, item.Paragraph);
+                        collecion.Add(paragraphCustom);
+                    }
                     g++;
+                    //if(startPosition == countParamParagraphsCustom)
+                    //{
+                    //    for (int j = 0; j < countParagraphsNovos; j++)
+                    //    {
+
+                    //        var item_j = paragraphsNovos[j];
+                    //        ParagraphCustom paragraphCustom_j = new ParagraphCustom();
+                    //        paragraphCustom_j.Clone(g, item_j.Paragraph);
+                    //        collecion.Add(paragraphCustom_j);
+                    //        g++;
+                    //    }
+                    //}
                 }
 
                 //foreach (var item in paramParagraphsCustom)

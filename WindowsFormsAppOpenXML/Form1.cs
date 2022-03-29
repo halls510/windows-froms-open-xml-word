@@ -67,6 +67,7 @@ namespace WindowsFormsAppOpenXML
                 foreach (var regiao in _regionCustom.Get())
                 {
                     List<ParagraphCustom> paragraphs = new List<ParagraphCustom>();
+                    var g = wordDocument.MainDocumentPart.Document;
                     paragraphs = wordDocument.MainDocumentPart.Document.FindRegionAndRemoveParagraphComplex(regiao.Region);
                     regiao.AddParagraphRangeComplex(paragraphs);
 
@@ -91,7 +92,7 @@ namespace WindowsFormsAppOpenXML
                             if (i != lastPessoa && i != 0)
                             {
                                 var p = FindXml.FindReplaceRegionContentTest(regiao.ParagraphCustomMiddle, "<name>", pessoa.name, regiao.Region);
-                                var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindRegionReplaceTrue(regiao.Region);
+                                var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindPositionRegionReplaceTrue(regiao.Region);
                                 var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
                                 var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, lastRegionReplace);
                                 wordDocument.MainDocumentPart.Document.RemoveParagraphs();
@@ -109,7 +110,7 @@ namespace WindowsFormsAppOpenXML
                             else if (i == lastPessoa)
                             {
                                 var p = FindXml.FindReplaceRegionContentTest(regiao.ParagraphCustomAfter, "<name>", pessoa.name, regiao.Region);
-                                var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindRegionReplaceTrue(regiao.Region);
+                                var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindPositionRegionReplaceTrue(regiao.Region);
                                 var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
                                 var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, lastRegionReplace);
                                 wordDocument.MainDocumentPart.Document.RemoveParagraphs();
@@ -117,7 +118,7 @@ namespace WindowsFormsAppOpenXML
                             }
                         }
                     } 
-                }                
+                }
 
                 // remove marcação de região
                 //foreach (var regiao in _regionCustom.Get())
