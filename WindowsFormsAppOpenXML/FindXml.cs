@@ -515,7 +515,7 @@ namespace WindowsFormsAppOpenXML
             return collecion;
         }
 
-        public static List<ParagraphCustom> AddChildParagraphCustom(this List<ParagraphCustom> paramParagraphsCustom, List<ParagraphCustom> paragraphsNovos, int? startPosition)
+        public static List<ParagraphCustom> AddChildParagraphCustom(this List<ParagraphCustom> paramParagraphsCustom, List<ParagraphCustom> paragraphsNovos, int? startPosition, string tipoParagraph)
         {
             List<ParagraphCustom> collecion = new List<ParagraphCustom>();
 
@@ -524,18 +524,16 @@ namespace WindowsFormsAppOpenXML
                 var countParamParagraphsCustom = paramParagraphsCustom.Count();
                 var countParagraphsNovos = paragraphsNovos.Count();
 
-                //int total = countParamParagraphsCustom + countParagraphsNovos;
+                bool check_paragraph_unico = (countParagraphsNovos == 1) ? true : false;
 
                 int g = 0;
                 for (int i = 0; i <= countParamParagraphsCustom; i++)
                 {
-                    //var item = paramParagraphsCustom[i];
-                    //ParagraphCustom paragraphCustom = new ParagraphCustom();
-                    //paragraphCustom.Clone(g, item.Paragraph);
-                    //collecion.Add(paragraphCustom);
-
                     if (i == startPosition)
                     {
+                        var positionParagraphCustomBefore = (i - 1);
+                        var ParagraphsCustomBefore = paramParagraphsCustom.ElementAtOrDefault(positionParagraphCustomBefore);
+
                         for (int j = 0; j < countParagraphsNovos; j++)
                         {
                             var t_paragraphsNovos = paragraphsNovos.ElementAtOrDefault<ParagraphCustom>(j);
@@ -544,8 +542,67 @@ namespace WindowsFormsAppOpenXML
                                 var item_j = t_paragraphsNovos;
                                 ParagraphCustom paragraphCustom_j = new ParagraphCustom();
                                 paragraphCustom_j.Clone(g, item_j.Paragraph);
-                                collecion.Add(paragraphCustom_j);
-                                g++;
+                                var runs_item_j = paragraphCustom_j.Paragraph.Descendants<Run>().ToList();
+                                if (check_paragraph_unico == true)
+                                {
+                                    switch (tipoParagraph)
+                                    {
+                                        case "full":
+                                            // add o paragrafo
+                                            collecion.Add(paragraphCustom_j);
+                                            g++;
+                                            break;
+                                        case "before":
+                                            // add o paragrafo
+                                            collecion.Add(paragraphCustom_j);
+                                            g++;
+                                            break;
+                                        case "middle":
+                                            // adiciona o run com text
+                                            if(ParagraphsCustomBefore != null)
+                                            {
+                                                foreach (var item_run in runs_item_j)
+                                                {
+                                                    var item_run_clone = (Run)item_run.Clone();
+                                                    ParagraphsCustomBefore.Paragraph.AppendChild<Run>(item_run_clone);
+                                                }
+                                                var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
+                                                if(el != null)
+                                                {
+                                                    ParagraphCustom pcj = new ParagraphCustom();
+                                                    paragraphCustom_j.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
+                                                    el = pcj;
+                                                }
+                                                g++;
+                                            }
+
+                                            break;
+                                        case "after":
+                                            // adiciona o run com text
+                                            if (ParagraphsCustomBefore != null)
+                                            {
+                                                foreach (var item_run in runs_item_j)
+                                                {
+                                                    var item_run_clone = (Run)item_run.Clone();
+                                                    ParagraphsCustomBefore.Paragraph.AppendChild<Run>(item_run_clone);
+                                                }
+                                                var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
+                                                if (el != null)
+                                                {
+                                                    ParagraphCustom pcj = new ParagraphCustom();
+                                                    paragraphCustom_j.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
+                                                    el = pcj;
+                                                }
+                                                g++;
+                                            }
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    collecion.Add(paragraphCustom_j);
+                                    g++;
+                                }                                
                             }
                         }
                     }
@@ -559,26 +616,8 @@ namespace WindowsFormsAppOpenXML
                         collecion.Add(paragraphCustom);
                     }
                     g++;
-                    //if(startPosition == countParamParagraphsCustom)
-                    //{
-                    //    for (int j = 0; j < countParagraphsNovos; j++)
-                    //    {
-
-                    //        var item_j = paragraphsNovos[j];
-                    //        ParagraphCustom paragraphCustom_j = new ParagraphCustom();
-                    //        paragraphCustom_j.Clone(g, item_j.Paragraph);
-                    //        collecion.Add(paragraphCustom_j);
-                    //        g++;
-                    //    }
-                    //}
                 }
 
-                //foreach (var item in paramParagraphsCustom)
-                //{
-                //    ParagraphCustom paragraphCustom = new ParagraphCustom();
-                //    paragraphCustom.Clone(item.Key, item.Paragraph);
-                //    collecion.Add(paragraphCustom);
-                //}
                 return collecion;
             }
             else
@@ -586,6 +625,54 @@ namespace WindowsFormsAppOpenXML
                 return paramParagraphsCustom;
             }
         }
+
+        //public static List<ParagraphCustom> AddChildParagraphCustom(this List<ParagraphCustom> paramParagraphsCustom, List<ParagraphCustom> paragraphsNovos, int? startPosition)
+        //{
+        //    List<ParagraphCustom> collecion = new List<ParagraphCustom>();
+
+        //    if (startPosition != null)
+        //    {
+        //        var countParamParagraphsCustom = paramParagraphsCustom.Count();
+        //        var countParagraphsNovos = paragraphsNovos.Count();
+
+        //        int g = 0;
+        //        for (int i = 0; i <= countParamParagraphsCustom; i++)
+        //        {                  
+
+        //            if (i == startPosition)
+        //            {
+        //                for (int j = 0; j < countParagraphsNovos; j++)
+        //                {
+        //                    var t_paragraphsNovos = paragraphsNovos.ElementAtOrDefault<ParagraphCustom>(j);
+        //                    if (t_paragraphsNovos != null)
+        //                    {
+        //                        var item_j = t_paragraphsNovos;
+        //                        ParagraphCustom paragraphCustom_j = new ParagraphCustom();
+        //                        paragraphCustom_j.Clone(g, item_j.Paragraph);
+        //                        collecion.Add(paragraphCustom_j);
+        //                        g++;
+        //                    }
+        //                }
+        //            }
+
+        //            var t_paramParagraphsCustom = paramParagraphsCustom.ElementAtOrDefault<ParagraphCustom>(i);
+        //            if (t_paramParagraphsCustom != null)
+        //            {
+        //                var item = t_paramParagraphsCustom;
+        //                ParagraphCustom paragraphCustom = new ParagraphCustom();
+        //                paragraphCustom.Clone(g, item.Paragraph);
+        //                collecion.Add(paragraphCustom);
+        //            }
+        //            g++;                   
+        //        }
+
+        //        return collecion;
+        //    }
+        //    else
+        //    {
+        //        return paramParagraphsCustom;
+        //    }
+        //}
 
 
         public static Document RemoveParagraphs(this Document document)
