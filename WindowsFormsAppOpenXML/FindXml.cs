@@ -630,7 +630,8 @@ namespace WindowsFormsAppOpenXML
                                             // adiciona o run com text
                                             if (countParagraphsNovos > 1)
                                             {
-                                                var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+                                                //var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+                                                var ParagraphsCustomParseStartPosition = paramParagraphsCustom.ElementAtOrDefault(ParseStartPosition);
 
                                                 if (ParagraphsCustomParseStartPosition != null)
                                                 {
@@ -647,6 +648,11 @@ namespace WindowsFormsAppOpenXML
 
                                                         el.Key = pcj.Key;
                                                         el.Paragraph = pcj.Paragraph;
+                                                    }
+                                                    else
+                                                    {
+                                                        collecion.Add(pcj);
+                                                        g++;
                                                     }
                                                 }
                                                 else
@@ -686,7 +692,8 @@ namespace WindowsFormsAppOpenXML
                                             // adiciona o run com text
                                             if (countParagraphsNovos > 1)
                                             {
-                                                var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+                                                //var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+                                                var ParagraphsCustomParseStartPosition = paramParagraphsCustom.ElementAtOrDefault(ParseStartPosition);
 
                                                 if (ParagraphsCustomParseStartPosition != null)
                                                 {
@@ -703,6 +710,11 @@ namespace WindowsFormsAppOpenXML
 
                                                         el.Key = pcj.Key;
                                                         el.Paragraph = pcj.Paragraph;
+                                                    }
+                                                    else
+                                                    {
+                                                        collecion.Add(pcj);
+                                                        g++;
                                                     }
                                                 }
                                                 else
