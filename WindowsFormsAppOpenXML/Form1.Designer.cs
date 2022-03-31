@@ -49,11 +49,12 @@ namespace WindowsFormsAppOpenXML
             this.Lbl_AddRegiao = new System.Windows.Forms.Label();
             this.Btn_AddPessoaInRegion = new System.Windows.Forms.Button();
             this.Wbr_Content = new System.Windows.Forms.WebBrowser();
+            this.Ckb_MesmoParagrafo = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // Txt_Name
             // 
-            this.Txt_Name.Location = new System.Drawing.Point(203, 211);
+            this.Txt_Name.Location = new System.Drawing.Point(203, 244);
             this.Txt_Name.Name = "Txt_Name";
             this.Txt_Name.Size = new System.Drawing.Size(239, 20);
             this.Txt_Name.TabIndex = 0;
@@ -72,7 +73,7 @@ namespace WindowsFormsAppOpenXML
             // 
             this.Lbl_Name.AutoSize = true;
             this.Lbl_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Lbl_Name.Location = new System.Drawing.Point(12, 207);
+            this.Lbl_Name.Location = new System.Drawing.Point(12, 240);
             this.Lbl_Name.Name = "Lbl_Name";
             this.Lbl_Name.Size = new System.Drawing.Size(66, 24);
             this.Lbl_Name.TabIndex = 5;
@@ -166,7 +167,7 @@ namespace WindowsFormsAppOpenXML
             // 
             this.Lbl_Regiao.AutoSize = true;
             this.Lbl_Regiao.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Lbl_Regiao.Location = new System.Drawing.Point(12, 168);
+            this.Lbl_Regiao.Location = new System.Drawing.Point(12, 201);
             this.Lbl_Regiao.Name = "Lbl_Regiao";
             this.Lbl_Regiao.Size = new System.Drawing.Size(180, 24);
             this.Lbl_Regiao.TabIndex = 19;
@@ -175,7 +176,7 @@ namespace WindowsFormsAppOpenXML
             // Combo_Regiao
             // 
             this.Combo_Regiao.FormattingEnabled = true;
-            this.Combo_Regiao.Location = new System.Drawing.Point(203, 168);
+            this.Combo_Regiao.Location = new System.Drawing.Point(203, 201);
             this.Combo_Regiao.Name = "Combo_Regiao";
             this.Combo_Regiao.Size = new System.Drawing.Size(239, 21);
             this.Combo_Regiao.TabIndex = 20;
@@ -202,7 +203,7 @@ namespace WindowsFormsAppOpenXML
             // 
             // Btn_AddPessoaInRegion
             // 
-            this.Btn_AddPessoaInRegion.Location = new System.Drawing.Point(467, 189);
+            this.Btn_AddPessoaInRegion.Location = new System.Drawing.Point(467, 222);
             this.Btn_AddPessoaInRegion.Name = "Btn_AddPessoaInRegion";
             this.Btn_AddPessoaInRegion.Size = new System.Drawing.Size(100, 24);
             this.Btn_AddPessoaInRegion.TabIndex = 22;
@@ -218,11 +219,22 @@ namespace WindowsFormsAppOpenXML
             this.Wbr_Content.Size = new System.Drawing.Size(603, 285);
             this.Wbr_Content.TabIndex = 23;
             // 
+            // Ckb_MesmoParagrafo
+            // 
+            this.Ckb_MesmoParagrafo.AutoSize = true;
+            this.Ckb_MesmoParagrafo.Location = new System.Drawing.Point(16, 122);
+            this.Ckb_MesmoParagrafo.Name = "Ckb_MesmoParagrafo";
+            this.Ckb_MesmoParagrafo.Size = new System.Drawing.Size(109, 17);
+            this.Ckb_MesmoParagrafo.TabIndex = 27;
+            this.Ckb_MesmoParagrafo.Text = "Mesmo Parágrafo";
+            this.Ckb_MesmoParagrafo.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1188, 660);
+            this.Controls.Add(this.Ckb_MesmoParagrafo);
             this.Controls.Add(this.Wbr_Content);
             this.Controls.Add(this.Btn_AddPessoaInRegion);
             this.Controls.Add(this.Btn_AddRegiao);
@@ -270,6 +282,7 @@ namespace WindowsFormsAppOpenXML
         private System.Windows.Forms.Label Lbl_AddRegiao;
         private System.Windows.Forms.Button Btn_AddPessoaInRegion;
         private System.Windows.Forms.WebBrowser Wbr_Content;
+        private System.Windows.Forms.CheckBox Ckb_MesmoParagrafo;
     }
 }
 

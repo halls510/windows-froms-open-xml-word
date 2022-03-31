@@ -325,11 +325,37 @@ namespace WindowsFormsAppOpenXML
             return result;
         }
 
+        public static int? FindPositionRegion(this List<ParagraphCustom> paragraphCustoms, string search)
+        {
+            int? result = null;
+
+            string openTag = "<r-" + search;
+
+            int i = 0;
+
+            var ps = paragraphCustoms.Select(s => s.Paragraph).ToList();
+
+            foreach (Paragraph paragraph in ps)
+            {
+                var texts = paragraph.Descendants<Text>();
+                foreach (var text in texts)
+                {
+                    if (text.Text.Contains(openTag))
+                    {
+                        result = i;
+                        break;
+                    }
+                }
+
+                i++;
+            }
+            return result;
+        }
         public static int? FindPositionRegion(this Document document, string search)
         {
             int? result = null;
 
-            string openTag = "<r-" + search + ">";
+            string openTag = "<r-" + search;
 
             int i = 0;
 
@@ -515,23 +541,37 @@ namespace WindowsFormsAppOpenXML
             return collecion;
         }
 
-        public static List<ParagraphCustom> AddChildParagraphCustom(this List<ParagraphCustom> paramParagraphsCustom, List<ParagraphCustom> paragraphsNovos, int? startPosition, string tipoParagraph)
+        public static List<ParagraphCustom> AddChildParagraphCustom(this List<ParagraphCustom> paramParagraphsCustom, List<ParagraphCustom> paragraphsNovos, int? startPosition, string tipoParagraph, RegionCustom regionCustom)
         {
             List<ParagraphCustom> collecion = new List<ParagraphCustom>();
 
             if (startPosition != null)
             {
+                int ParseStartPosition = (int)startPosition;
                 var countParamParagraphsCustom = paramParagraphsCustom.Count();
                 var countParagraphsNovos = paragraphsNovos.Count();
 
-                bool check_paragraph_unico = (countParagraphsNovos == 1) ? true : false;
+                //bool check_paragraph_unico = (countParagraphsNovos == 1) ? true : false;
+                //bool check_paragraph_unico = (countParagraphsNovos == 1) ? true : false;
+                bool check_paragraph_unico = false;
+
+                check_paragraph_unico = regionCustom.MesmoParagrafo;
+
+                if (regionCustom.MesmoParagrafo == true && countParagraphsNovos > 1)
+                {
+                    int? position = paramParagraphsCustom.FindPositionRegion(regionCustom.Region);
+                    if (position != null)
+                    {
+                        ParseStartPosition =(int)position;
+                    }
+                }
 
                 int g = 0;
                 for (int i = 0; i <= countParamParagraphsCustom; i++)
                 {
-                    if (i == startPosition)
+                    if (i == ParseStartPosition)
                     {
-                        var positionParagraphCustomBefore = (i - 1);
+                        var positionParagraphCustomBefore = (ParseStartPosition - 1);
                         var ParagraphsCustomBefore = paramParagraphsCustom.ElementAtOrDefault(positionParagraphCustomBefore);
 
                         for (int j = 0; j < countParagraphsNovos; j++)
@@ -554,46 +594,149 @@ namespace WindowsFormsAppOpenXML
                                             break;
                                         case "before":
                                             // add o paragrafo
-                                            collecion.Add(paragraphCustom_j);
-                                            g++;
+                                            if (countParagraphsNovos > 1)
+                                            {
+                                                var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+
+                                                if (ParagraphsCustomParseStartPosition != null)
+                                                {
+                                                    ParagraphCustom pcj = new ParagraphCustom();
+                                                    pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
+                                                    foreach (var item_run in runs_item_j)
+                                                    {
+                                                        var item_run_clone = (Run)item_run.Clone();
+                                                        pcj.Paragraph.AppendChild<Run>(item_run_clone);
+                                                    }
+                                                    var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
+                                                    if (el != null)
+                                                    {
+                                                        el.Key = pcj.Key;
+                                                        el.Paragraph = pcj.Paragraph;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    collecion.Add(paragraphCustom_j);
+                                                    g++;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                collecion.Add(paragraphCustom_j);
+                                                g++;
+                                            }
                                             break;
                                         case "middle":
                                             // adiciona o run com text
-                                            if(ParagraphsCustomBefore != null)
+                                            if (countParagraphsNovos > 1)
                                             {
-                                                foreach (var item_run in runs_item_j)
-                                                {
-                                                    var item_run_clone = (Run)item_run.Clone();
-                                                    ParagraphsCustomBefore.Paragraph.AppendChild<Run>(item_run_clone);
-                                                }
-                                                var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
-                                                if(el != null)
+                                                var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+
+                                                if (ParagraphsCustomParseStartPosition != null)
                                                 {
                                                     ParagraphCustom pcj = new ParagraphCustom();
-                                                    paragraphCustom_j.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
-                                                    el = pcj;
-                                                }
-                                                g++;
-                                            }
+                                                    pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
+                                                    foreach (var item_run in runs_item_j)
+                                                    {
+                                                        var item_run_clone = (Run)item_run.Clone();
+                                                        pcj.Paragraph.AppendChild<Run>(item_run_clone);
+                                                    }
+                                                    var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
+                                                    if (el != null)
+                                                    {
 
+                                                        el.Key = pcj.Key;
+                                                        el.Paragraph = pcj.Paragraph;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    collecion.Add(paragraphCustom_j);
+                                                    g++;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (ParagraphsCustomBefore != null)
+                                                {
+                                                    ParagraphCustom pcj = new ParagraphCustom();
+                                                    pcj.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
+                                                    foreach (var item_run in runs_item_j)
+                                                    {
+                                                        var item_run_clone = (Run)item_run.Clone();
+                                                        pcj.Paragraph.AppendChild<Run>(item_run_clone);
+                                                    }
+                                                    var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
+                                                    if (el != null)
+                                                    {
+
+                                                        el.Key = pcj.Key;
+                                                        el.Paragraph = pcj.Paragraph;
+                                                    }
+                                                    g++;
+                                                }
+                                                else
+                                                {
+                                                    collecion.Add(paragraphCustom_j);
+                                                    g++;
+                                                }
+                                            }
                                             break;
                                         case "after":
                                             // adiciona o run com text
-                                            if (ParagraphsCustomBefore != null)
+                                            if (countParagraphsNovos > 1)
                                             {
-                                                foreach (var item_run in runs_item_j)
-                                                {
-                                                    var item_run_clone = (Run)item_run.Clone();
-                                                    ParagraphsCustomBefore.Paragraph.AppendChild<Run>(item_run_clone);
-                                                }
-                                                var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
-                                                if (el != null)
+                                                var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+
+                                                if (ParagraphsCustomParseStartPosition != null)
                                                 {
                                                     ParagraphCustom pcj = new ParagraphCustom();
-                                                    paragraphCustom_j.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
-                                                    el = pcj;
+                                                    pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
+                                                    foreach (var item_run in runs_item_j)
+                                                    {
+                                                        var item_run_clone = (Run)item_run.Clone();
+                                                        pcj.Paragraph.AppendChild<Run>(item_run_clone);
+                                                    }
+                                                    var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
+                                                    if (el != null)
+                                                    {
+
+                                                        el.Key = pcj.Key;
+                                                        el.Paragraph = pcj.Paragraph;
+                                                    }
                                                 }
-                                                g++;
+                                                else
+                                                {
+                                                    collecion.Add(paragraphCustom_j);
+                                                    g++;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (ParagraphsCustomBefore != null)
+                                                {
+                                                    ParagraphCustom pcj = new ParagraphCustom();
+                                                    pcj.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
+                                                    foreach (var item_run in runs_item_j)
+                                                    {
+                                                        var item_run_clone = (Run)item_run.Clone();
+                                                        pcj.Paragraph.AppendChild<Run>(item_run_clone);
+                                                    }
+                                                    var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
+                                                    if (el != null)
+                                                    {
+
+                                                        el.Key = pcj.Key;
+                                                        el.Paragraph = pcj.Paragraph;
+                                                    }
+
+                                                    g++;
+                                                }
+                                                else
+                                                {
+                                                    collecion.Add(paragraphCustom_j);
+                                                    g++;
+                                                }
                                             }
                                             break;
                                     }
@@ -602,7 +745,7 @@ namespace WindowsFormsAppOpenXML
                                 {
                                     collecion.Add(paragraphCustom_j);
                                     g++;
-                                }                                
+                                }
                             }
                         }
                     }
