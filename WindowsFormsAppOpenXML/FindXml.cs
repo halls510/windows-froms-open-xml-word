@@ -648,11 +648,13 @@ namespace WindowsFormsAppOpenXML
 
                                                         el.Key = pcj.Key;
                                                         el.Paragraph = pcj.Paragraph;
+                                                        ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
                                                     }
                                                     else
-                                                    {
+                                                    {                                                        
                                                         collecion.Add(pcj);
-                                                        g++;
+                                                        ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
+                                                        //g++;
                                                     }
                                                 }
                                                 else
@@ -710,10 +712,12 @@ namespace WindowsFormsAppOpenXML
 
                                                         el.Key = pcj.Key;
                                                         el.Paragraph = pcj.Paragraph;
+                                                        ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
                                                     }
                                                     else
                                                     {
                                                         collecion.Add(pcj);
+                                                        ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
                                                         g++;
                                                     }
                                                 }
