@@ -12,6 +12,7 @@ namespace WindowsFormsAppOpenXML
         public int Codigo { get; set; }
         public string Region { get; set; }
         public int PositionInitial { get; set; }
+        public int PositionAtual { get; set; }
         public bool MesmoParagrafo { get; set; }
         public List<Pessoa> Pessoas { get; set; }
         public List<ParagraphCustom> ParagraphCustomBefore { get; set; }

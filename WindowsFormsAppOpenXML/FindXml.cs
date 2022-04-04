@@ -149,7 +149,29 @@ namespace WindowsFormsAppOpenXML
 
         #region RegionComplex
 
-        public static List<ParagraphCustom> FindRegionAndRemoveParagraphComplex(this Document document, string search)
+        public static List<ParagraphCustom> FindRegionParagraphComplex(this Document document, string search)
+        {
+            List<ParagraphCustom> paragraphsCustom = new List<ParagraphCustom>();
+
+            int i = 0;
+            foreach (var item in document.Descendants<Paragraph>())
+            {
+                ParagraphCustom paragraphCustom = new ParagraphCustom();
+                paragraphCustom.Clone(i, item);
+                paragraphsCustom.Add(paragraphCustom);
+                i++;
+            }
+
+            return _FindRegionParagraphComplex(paragraphsCustom, search);
+        }
+
+        public static List<ParagraphCustom> FindRegionParagraphComplex(this List<ParagraphCustom> paragraphsCustom, string search)
+        {            
+            return _FindRegionParagraphComplex(paragraphsCustom, search);
+        }
+
+
+        private static List<ParagraphCustom> _FindRegionParagraphComplex(List<ParagraphCustom> paragraphsCustom, string search)
         {
             List<ParagraphCustom> collection = new List<ParagraphCustom>();
 
@@ -160,11 +182,9 @@ namespace WindowsFormsAppOpenXML
             int countFinish = 0;
             int i = 0;
 
-            List<int> removes = new List<int>();
-
-            foreach (Paragraph paragraph in document.Descendants<Paragraph>())
+            foreach (ParagraphCustom item in paragraphsCustom)
             {
-                var texts = paragraph.Descendants<Text>();
+                var texts = item.Paragraph.Descendants<Text>();
                 foreach (var text in texts)
                 {
                     if (text.Text.Contains(openTag))
@@ -181,9 +201,8 @@ namespace WindowsFormsAppOpenXML
                 if (countStart == 1)
                 {
                     ParagraphCustom paragraphCustom = new ParagraphCustom();
-                    paragraphCustom.Clone(i, paragraph);
-                    collection.Add(paragraphCustom);
-                    removes.Add(i);
+                    paragraphCustom.Clone(i, item.Paragraph);
+                    collection.Add(paragraphCustom);                   
                 }
 
                 if (countFinish == 1)
@@ -191,31 +210,69 @@ namespace WindowsFormsAppOpenXML
                     break;
                 }
                 i++;
-            }
-
-            var docs = document.Descendants<Paragraph>();
-            var t = docs.Count();
-            //for (int k = 0; k <= docs.Count(); k++)
-            //{
-            //    var c = removes.Contains(k);
-            //    if (c == true)
-            //    {
-            //        docs.ElementAt<Paragraph>(k).Remove();
-            //    }
-            //}
-
-            for (int l = docs.Count() - 1; l >= 0; l--)
-            {
-                var c = removes.Contains(l);
-                if (c == true)
-                {
-                    docs.ElementAt<Paragraph>(l).Remove();
-                }
-            }
+            }           
 
             return collection;
         }
 
+
+        //private static List<ParagraphCustom> FindRegionAndRemoveParagraphComplex(this Document document, string search)
+        //{
+        //    List<ParagraphCustom> collection = new List<ParagraphCustom>();
+
+        //    string openTag = "<r-" + search + ">";
+        //    string closeTag = "</r-" + search + ">";
+
+        //    int countStart = 0;
+        //    int countFinish = 0;
+        //    int i = 0;
+
+        //    List<int> removes = new List<int>();
+
+        //    foreach (Paragraph paragraph in document.Descendants<Paragraph>())
+        //    {
+        //        var texts = paragraph.Descendants<Text>();
+        //        foreach (var text in texts)
+        //        {
+        //            if (text.Text.Contains(openTag))
+        //            {
+        //                countStart++;
+        //            }
+
+        //            if (text.Text.Contains(closeTag))
+        //            {
+        //                countFinish++;
+        //            }
+        //        }
+
+        //        if (countStart == 1)
+        //        {
+        //            ParagraphCustom paragraphCustom = new ParagraphCustom();
+        //            paragraphCustom.Clone(i, paragraph);
+        //            collection.Add(paragraphCustom);
+        //            removes.Add(i);
+        //        }
+
+        //        if (countFinish == 1)
+        //        {
+        //            break;
+        //        }
+        //        i++;
+        //    }
+
+        //    var docs = document.Descendants<Paragraph>();
+
+        //    for (int l = docs.Count() - 1; l >= 0; l--)
+        //    {
+        //        var c = removes.Contains(l);
+        //        if (c == true)
+        //        {
+        //            docs.ElementAt<Paragraph>(l).Remove();
+        //        }
+        //    }
+
+        //    return collection;
+        //}
         #endregion
 
         public static List<ParagraphCustom> RemoveTextNoRegion(this RegionCustom regionCustom)
@@ -541,249 +598,496 @@ namespace WindowsFormsAppOpenXML
             return collecion;
         }
 
-        public static List<ParagraphCustom> AddChildParagraphCustom(this List<ParagraphCustom> paramParagraphsCustom, List<ParagraphCustom> paragraphsNovos, int? startPosition, string tipoParagraph, RegionCustom regionCustom)
+        public static List<ParagraphCustom> AddChildParagraphCustom(this List<ParagraphCustom> paramParagraphsCustom, List<ParagraphCustom> paragraphsNovos, string tipoParagraph, RegionCustom regionCustom)
         {
             List<ParagraphCustom> collecion = new List<ParagraphCustom>();
 
-            if (startPosition != null)
-            {
-                int ParseStartPosition = (int)startPosition;
-                var countParamParagraphsCustom = paramParagraphsCustom.Count();
-                var countParagraphsNovos = paragraphsNovos.Count();
+            //if (startPosition != null)
+            //{
+            //    int ParseStartPosition = (int)startPosition;
+            //    var countParamParagraphsCustom = paramParagraphsCustom.Count();
+            //    var countParagraphsNovos = paragraphsNovos.Count();
 
-                //bool check_paragraph_unico = (countParagraphsNovos == 1) ? true : false;
-                //bool check_paragraph_unico = (countParagraphsNovos == 1) ? true : false;
-                bool check_paragraph_unico = false;
+            //    //bool check_paragraph_unico = (countParagraphsNovos == 1) ? true : false;
+            //    //bool check_paragraph_unico = (countParagraphsNovos == 1) ? true : false;
+            //    bool check_paragraph_unico = false;
 
-                check_paragraph_unico = regionCustom.MesmoParagrafo;
+            //    check_paragraph_unico = regionCustom.MesmoParagrafo;
 
-                if (regionCustom.MesmoParagrafo == true && countParagraphsNovos > 1)
-                {
-                    int? position = paramParagraphsCustom.FindPositionRegion(regionCustom.Region);
-                    if (position != null)
-                    {
-                        ParseStartPosition =(int)position;
-                    }
-                }
+            //    if (regionCustom.MesmoParagrafo == true && countParagraphsNovos > 1)
+            //    {
+            //        int? position = paramParagraphsCustom.FindPositionRegion(regionCustom.Region);
+            //        if (position != null)
+            //        {
+            //            ParseStartPosition =(int)position;
+            //        }
+            //    }
 
-                int g = 0;
-                for (int i = 0; i <= countParamParagraphsCustom; i++)
-                {
-                    if (i == ParseStartPosition)
-                    {
-                        var positionParagraphCustomBefore = (ParseStartPosition - 1);
-                        var ParagraphsCustomBefore = paramParagraphsCustom.ElementAtOrDefault(positionParagraphCustomBefore);
+            //    int g = 0;
+            //    for (int i = 0; i <= countParamParagraphsCustom; i++)
+            //    {
+            //        if (i == ParseStartPosition)
+            //        {
+            //            var positionParagraphCustomBefore = (ParseStartPosition - 1);
+            //            var ParagraphsCustomBefore = paramParagraphsCustom.ElementAtOrDefault(positionParagraphCustomBefore);
 
-                        for (int j = 0; j < countParagraphsNovos; j++)
-                        {
-                            var t_paragraphsNovos = paragraphsNovos.ElementAtOrDefault<ParagraphCustom>(j);
-                            if (t_paragraphsNovos != null)
-                            {
-                                var item_j = t_paragraphsNovos;
-                                ParagraphCustom paragraphCustom_j = new ParagraphCustom();
-                                paragraphCustom_j.Clone(g, item_j.Paragraph);
-                                var runs_item_j = paragraphCustom_j.Paragraph.Descendants<Run>().ToList();
-                                if (check_paragraph_unico == true)
-                                {
-                                    switch (tipoParagraph)
-                                    {
-                                        case "full":
-                                            // add o paragrafo
-                                            collecion.Add(paragraphCustom_j);
-                                            g++;
-                                            break;
-                                        case "before":
-                                            // add o paragrafo
-                                            if (countParagraphsNovos > 1)
-                                            {
-                                                var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+            //            for (int j = 0; j < countParagraphsNovos; j++)
+            //            {
+            //                var t_paragraphsNovos = paragraphsNovos.ElementAtOrDefault<ParagraphCustom>(j);
+            //                if (t_paragraphsNovos != null)
+            //                {
+            //                    var item_j = t_paragraphsNovos;
+            //                    ParagraphCustom paragraphCustom_j = new ParagraphCustom();
+            //                    paragraphCustom_j.Clone(g, item_j.Paragraph);
+            //                    var runs_item_j = paragraphCustom_j.Paragraph.Descendants<Run>().ToList();
+            //                    if (check_paragraph_unico == true)
+            //                    {
+            //                        switch (tipoParagraph)
+            //                        {
+            //                            case "full":
+            //                                // add o paragrafo
+            //                                collecion.Add(paragraphCustom_j);
+            //                                g++;
+            //                                break;
+            //                            case "before":
+            //                                // add o paragrafo
+            //                                if (countParagraphsNovos > 1)
+            //                                {
+            //                                    var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
 
-                                                if (ParagraphsCustomParseStartPosition != null)
-                                                {
-                                                    ParagraphCustom pcj = new ParagraphCustom();
-                                                    pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
-                                                    foreach (var item_run in runs_item_j)
-                                                    {
-                                                        var item_run_clone = (Run)item_run.Clone();
-                                                        pcj.Paragraph.AppendChild<Run>(item_run_clone);
-                                                    }
-                                                    var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
-                                                    if (el != null)
-                                                    {
-                                                        el.Key = pcj.Key;
-                                                        el.Paragraph = pcj.Paragraph;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    collecion.Add(paragraphCustom_j);
-                                                    g++;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                collecion.Add(paragraphCustom_j);
-                                                g++;
-                                            }
-                                            break;
-                                        case "middle":
-                                            // adiciona o run com text
-                                            if (countParagraphsNovos > 1)
-                                            {
-                                                //var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
-                                                var ParagraphsCustomParseStartPosition = paramParagraphsCustom.ElementAtOrDefault(ParseStartPosition);
+            //                                    if (ParagraphsCustomParseStartPosition != null)
+            //                                    {
+            //                                        ParagraphCustom pcj = new ParagraphCustom();
+            //                                        pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
+            //                                        foreach (var item_run in runs_item_j)
+            //                                        {
+            //                                            var item_run_clone = (Run)item_run.Clone();
+            //                                            pcj.Paragraph.AppendChild<Run>(item_run_clone);
+            //                                        }
+            //                                        var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
+            //                                        if (el != null)
+            //                                        {
+            //                                            el.Key = pcj.Key;
+            //                                            el.Paragraph = pcj.Paragraph;
+            //                                        }
+            //                                    }
+            //                                    else
+            //                                    {
+            //                                        collecion.Add(paragraphCustom_j);
+            //                                        g++;
+            //                                    }
+            //                                }
+            //                                else
+            //                                {
+            //                                    collecion.Add(paragraphCustom_j);
+            //                                    g++;
+            //                                }
+            //                                break;
+            //                            case "middle":
+            //                                // adiciona o run com text
+            //                                if (countParagraphsNovos > 1)
+            //                                {
+            //                                    //var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+            //                                    var ParagraphsCustomParseStartPosition = paramParagraphsCustom.ElementAtOrDefault(ParseStartPosition);
 
-                                                if (ParagraphsCustomParseStartPosition != null)
-                                                {
-                                                    ParagraphCustom pcj = new ParagraphCustom();
-                                                    pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
-                                                    foreach (var item_run in runs_item_j)
-                                                    {
-                                                        var item_run_clone = (Run)item_run.Clone();
-                                                        pcj.Paragraph.AppendChild<Run>(item_run_clone);
-                                                    }
-                                                    var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
-                                                    if (el != null)
-                                                    {
+            //                                    if (ParagraphsCustomParseStartPosition != null)
+            //                                    {
+            //                                        ParagraphCustom pcj = new ParagraphCustom();
+            //                                        pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
+            //                                        foreach (var item_run in runs_item_j)
+            //                                        {
+            //                                            var item_run_clone = (Run)item_run.Clone();
+            //                                            pcj.Paragraph.AppendChild<Run>(item_run_clone);
+            //                                        }
+            //                                        var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
+            //                                        if (el != null)
+            //                                        {
 
-                                                        el.Key = pcj.Key;
-                                                        el.Paragraph = pcj.Paragraph;
-                                                        ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
-                                                    }
-                                                    else
-                                                    {                                                        
-                                                        collecion.Add(pcj);
-                                                        ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
-                                                        //g++;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    collecion.Add(paragraphCustom_j);
-                                                    g++;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (ParagraphsCustomBefore != null)
-                                                {
-                                                    ParagraphCustom pcj = new ParagraphCustom();
-                                                    pcj.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
-                                                    foreach (var item_run in runs_item_j)
-                                                    {
-                                                        var item_run_clone = (Run)item_run.Clone();
-                                                        pcj.Paragraph.AppendChild<Run>(item_run_clone);
-                                                    }
-                                                    var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
-                                                    if (el != null)
-                                                    {
+            //                                            el.Key = pcj.Key;
+            //                                            el.Paragraph = pcj.Paragraph;
+            //                                            ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
+            //                                        }
+            //                                        else
+            //                                        {                                                        
+            //                                            collecion.Add(pcj);
+            //                                            ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
+            //                                            //g++;
+            //                                        }
+            //                                    }
+            //                                    else
+            //                                    {
+            //                                        collecion.Add(paragraphCustom_j);
+            //                                        g++;
+            //                                    }
+            //                                }
+            //                                else
+            //                                {
+            //                                    if (ParagraphsCustomBefore != null)
+            //                                    {
+            //                                        ParagraphCustom pcj = new ParagraphCustom();
+            //                                        pcj.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
+            //                                        foreach (var item_run in runs_item_j)
+            //                                        {
+            //                                            var item_run_clone = (Run)item_run.Clone();
+            //                                            pcj.Paragraph.AppendChild<Run>(item_run_clone);
+            //                                        }
+            //                                        var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
+            //                                        if (el != null)
+            //                                        {
 
-                                                        el.Key = pcj.Key;
-                                                        el.Paragraph = pcj.Paragraph;
-                                                    }
-                                                    g++;
-                                                }
-                                                else
-                                                {
-                                                    collecion.Add(paragraphCustom_j);
-                                                    g++;
-                                                }
-                                            }
-                                            break;
-                                        case "after":
-                                            // adiciona o run com text
-                                            if (countParagraphsNovos > 1)
-                                            {
-                                                //var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
-                                                var ParagraphsCustomParseStartPosition = paramParagraphsCustom.ElementAtOrDefault(ParseStartPosition);
+            //                                            el.Key = pcj.Key;
+            //                                            el.Paragraph = pcj.Paragraph;
+            //                                        }
+            //                                        g++;
+            //                                    }
+            //                                    else
+            //                                    {
+            //                                        collecion.Add(paragraphCustom_j);
+            //                                        g++;
+            //                                    }
+            //                                }
+            //                                break;
+            //                            case "after":
+            //                                // adiciona o run com text
+            //                                if (countParagraphsNovos > 1)
+            //                                {
+            //                                    //var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+            //                                    var ParagraphsCustomParseStartPosition = paramParagraphsCustom.ElementAtOrDefault(ParseStartPosition);
 
-                                                if (ParagraphsCustomParseStartPosition != null)
-                                                {
-                                                    ParagraphCustom pcj = new ParagraphCustom();
-                                                    pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
-                                                    foreach (var item_run in runs_item_j)
-                                                    {
-                                                        var item_run_clone = (Run)item_run.Clone();
-                                                        pcj.Paragraph.AppendChild<Run>(item_run_clone);
-                                                    }
-                                                    var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
-                                                    if (el != null)
-                                                    {
+            //                                    if (ParagraphsCustomParseStartPosition != null)
+            //                                    {
+            //                                        ParagraphCustom pcj = new ParagraphCustom();
+            //                                        pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
+            //                                        foreach (var item_run in runs_item_j)
+            //                                        {
+            //                                            var item_run_clone = (Run)item_run.Clone();
+            //                                            pcj.Paragraph.AppendChild<Run>(item_run_clone);
+            //                                        }
+            //                                        var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
+            //                                        if (el != null)
+            //                                        {
 
-                                                        el.Key = pcj.Key;
-                                                        el.Paragraph = pcj.Paragraph;
-                                                        ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
-                                                    }
-                                                    else
-                                                    {
-                                                        collecion.Add(pcj);
-                                                        ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
-                                                        g++;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    collecion.Add(paragraphCustom_j);
-                                                    g++;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (ParagraphsCustomBefore != null)
-                                                {
-                                                    ParagraphCustom pcj = new ParagraphCustom();
-                                                    pcj.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
-                                                    foreach (var item_run in runs_item_j)
-                                                    {
-                                                        var item_run_clone = (Run)item_run.Clone();
-                                                        pcj.Paragraph.AppendChild<Run>(item_run_clone);
-                                                    }
-                                                    var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
-                                                    if (el != null)
-                                                    {
+            //                                            el.Key = pcj.Key;
+            //                                            el.Paragraph = pcj.Paragraph;
+            //                                            ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
+            //                                        }
+            //                                        else
+            //                                        {
+            //                                            collecion.Add(pcj);
+            //                                            ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
+            //                                            g++;
+            //                                        }
+            //                                    }
+            //                                    else
+            //                                    {
+            //                                        collecion.Add(paragraphCustom_j);
+            //                                        g++;
+            //                                    }
+            //                                }
+            //                                else
+            //                                {
+            //                                    if (ParagraphsCustomBefore != null)
+            //                                    {
+            //                                        ParagraphCustom pcj = new ParagraphCustom();
+            //                                        pcj.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
+            //                                        foreach (var item_run in runs_item_j)
+            //                                        {
+            //                                            var item_run_clone = (Run)item_run.Clone();
+            //                                            pcj.Paragraph.AppendChild<Run>(item_run_clone);
+            //                                        }
+            //                                        var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
+            //                                        if (el != null)
+            //                                        {
 
-                                                        el.Key = pcj.Key;
-                                                        el.Paragraph = pcj.Paragraph;
-                                                    }
+            //                                            el.Key = pcj.Key;
+            //                                            el.Paragraph = pcj.Paragraph;
+            //                                        }
 
-                                                    g++;
-                                                }
-                                                else
-                                                {
-                                                    collecion.Add(paragraphCustom_j);
-                                                    g++;
-                                                }
-                                            }
-                                            break;
-                                    }
-                                }
-                                else
-                                {
-                                    collecion.Add(paragraphCustom_j);
-                                    g++;
-                                }
-                            }
-                        }
-                    }
+            //                                        g++;
+            //                                    }
+            //                                    else
+            //                                    {
+            //                                        collecion.Add(paragraphCustom_j);
+            //                                        g++;
+            //                                    }
+            //                                }
+            //                                break;
+            //                        }
+            //                    }
+            //                    else
+            //                    {
+            //                        collecion.Add(paragraphCustom_j);
+            //                        g++;
+            //                    }
+            //                }
+            //            }
+            //        }
 
-                    var t_paramParagraphsCustom = paramParagraphsCustom.ElementAtOrDefault<ParagraphCustom>(i);
-                    if (t_paramParagraphsCustom != null)
-                    {
-                        var item = t_paramParagraphsCustom;
-                        ParagraphCustom paragraphCustom = new ParagraphCustom();
-                        paragraphCustom.Clone(g, item.Paragraph);
-                        collecion.Add(paragraphCustom);
-                    }
-                    g++;
-                }
+            //        var t_paramParagraphsCustom = paramParagraphsCustom.ElementAtOrDefault<ParagraphCustom>(i);
+            //        if (t_paramParagraphsCustom != null)
+            //        {
+            //            var item = t_paramParagraphsCustom;
+            //            ParagraphCustom paragraphCustom = new ParagraphCustom();
+            //            paragraphCustom.Clone(g, item.Paragraph);
+            //            collecion.Add(paragraphCustom);
+            //        }
+            //        g++;
+            //    }
 
-                return collecion;
-            }
-            else
-            {
-                return paramParagraphsCustom;
-            }
+            //    return collecion;
+            //}
+            //else
+            //{
+            //    return paramParagraphsCustom;
+            //}
+            return collecion;
         }
+
+
+        //public static List<ParagraphCustom> AddChildParagraphCustom(this List<ParagraphCustom> paramParagraphsCustom, List<ParagraphCustom> paragraphsNovos, int? startPosition, string tipoParagraph, RegionCustom regionCustom)
+        //{
+        //    List<ParagraphCustom> collecion = new List<ParagraphCustom>();
+
+        //    if (startPosition != null)
+        //    {
+        //        int ParseStartPosition = (int)startPosition;
+        //        var countParamParagraphsCustom = paramParagraphsCustom.Count();
+        //        var countParagraphsNovos = paragraphsNovos.Count();
+
+        //        //bool check_paragraph_unico = (countParagraphsNovos == 1) ? true : false;
+        //        //bool check_paragraph_unico = (countParagraphsNovos == 1) ? true : false;
+        //        bool check_paragraph_unico = false;
+
+        //        check_paragraph_unico = regionCustom.MesmoParagrafo;
+
+        //        if (regionCustom.MesmoParagrafo == true && countParagraphsNovos > 1)
+        //        {
+        //            int? position = paramParagraphsCustom.FindPositionRegion(regionCustom.Region);
+        //            if (position != null)
+        //            {
+        //                ParseStartPosition = (int)position;
+        //            }
+        //        }
+
+        //        int g = 0;
+        //        for (int i = 0; i <= countParamParagraphsCustom; i++)
+        //        {
+        //            if (i == ParseStartPosition)
+        //            {
+        //                var positionParagraphCustomBefore = (ParseStartPosition - 1);
+        //                var ParagraphsCustomBefore = paramParagraphsCustom.ElementAtOrDefault(positionParagraphCustomBefore);
+
+        //                for (int j = 0; j < countParagraphsNovos; j++)
+        //                {
+        //                    var t_paragraphsNovos = paragraphsNovos.ElementAtOrDefault<ParagraphCustom>(j);
+        //                    if (t_paragraphsNovos != null)
+        //                    {
+        //                        var item_j = t_paragraphsNovos;
+        //                        ParagraphCustom paragraphCustom_j = new ParagraphCustom();
+        //                        paragraphCustom_j.Clone(g, item_j.Paragraph);
+        //                        var runs_item_j = paragraphCustom_j.Paragraph.Descendants<Run>().ToList();
+        //                        if (check_paragraph_unico == true)
+        //                        {
+        //                            switch (tipoParagraph)
+        //                            {
+        //                                case "full":
+        //                                    // add o paragrafo
+        //                                    collecion.Add(paragraphCustom_j);
+        //                                    g++;
+        //                                    break;
+        //                                case "before":
+        //                                    // add o paragrafo
+        //                                    if (countParagraphsNovos > 1)
+        //                                    {
+        //                                        var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+
+        //                                        if (ParagraphsCustomParseStartPosition != null)
+        //                                        {
+        //                                            ParagraphCustom pcj = new ParagraphCustom();
+        //                                            pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
+        //                                            foreach (var item_run in runs_item_j)
+        //                                            {
+        //                                                var item_run_clone = (Run)item_run.Clone();
+        //                                                pcj.Paragraph.AppendChild<Run>(item_run_clone);
+        //                                            }
+        //                                            var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
+        //                                            if (el != null)
+        //                                            {
+        //                                                el.Key = pcj.Key;
+        //                                                el.Paragraph = pcj.Paragraph;
+        //                                            }
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            collecion.Add(paragraphCustom_j);
+        //                                            g++;
+        //                                        }
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        collecion.Add(paragraphCustom_j);
+        //                                        g++;
+        //                                    }
+        //                                    break;
+        //                                case "middle":
+        //                                    // adiciona o run com text
+        //                                    if (countParagraphsNovos > 1)
+        //                                    {
+        //                                        //var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+        //                                        var ParagraphsCustomParseStartPosition = paramParagraphsCustom.ElementAtOrDefault(ParseStartPosition);
+
+        //                                        if (ParagraphsCustomParseStartPosition != null)
+        //                                        {
+        //                                            ParagraphCustom pcj = new ParagraphCustom();
+        //                                            pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
+        //                                            foreach (var item_run in runs_item_j)
+        //                                            {
+        //                                                var item_run_clone = (Run)item_run.Clone();
+        //                                                pcj.Paragraph.AppendChild<Run>(item_run_clone);
+        //                                            }
+        //                                            var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
+        //                                            if (el != null)
+        //                                            {
+
+        //                                                el.Key = pcj.Key;
+        //                                                el.Paragraph = pcj.Paragraph;
+        //                                                ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
+        //                                            }
+        //                                            else
+        //                                            {
+        //                                                collecion.Add(pcj);
+        //                                                ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
+        //                                                //g++;
+        //                                            }
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            collecion.Add(paragraphCustom_j);
+        //                                            g++;
+        //                                        }
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        if (ParagraphsCustomBefore != null)
+        //                                        {
+        //                                            ParagraphCustom pcj = new ParagraphCustom();
+        //                                            pcj.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
+        //                                            foreach (var item_run in runs_item_j)
+        //                                            {
+        //                                                var item_run_clone = (Run)item_run.Clone();
+        //                                                pcj.Paragraph.AppendChild<Run>(item_run_clone);
+        //                                            }
+        //                                            var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
+        //                                            if (el != null)
+        //                                            {
+
+        //                                                el.Key = pcj.Key;
+        //                                                el.Paragraph = pcj.Paragraph;
+        //                                            }
+        //                                            g++;
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            collecion.Add(paragraphCustom_j);
+        //                                            g++;
+        //                                        }
+        //                                    }
+        //                                    break;
+        //                                case "after":
+        //                                    // adiciona o run com text
+        //                                    if (countParagraphsNovos > 1)
+        //                                    {
+        //                                        //var ParagraphsCustomParseStartPosition = collecion.ElementAtOrDefault(ParseStartPosition);
+        //                                        var ParagraphsCustomParseStartPosition = paramParagraphsCustom.ElementAtOrDefault(ParseStartPosition);
+
+        //                                        if (ParagraphsCustomParseStartPosition != null)
+        //                                        {
+        //                                            ParagraphCustom pcj = new ParagraphCustom();
+        //                                            pcj.Clone(ParagraphsCustomParseStartPosition.Key, ParagraphsCustomParseStartPosition.Paragraph);
+        //                                            foreach (var item_run in runs_item_j)
+        //                                            {
+        //                                                var item_run_clone = (Run)item_run.Clone();
+        //                                                pcj.Paragraph.AppendChild<Run>(item_run_clone);
+        //                                            }
+        //                                            var el = collecion.ElementAtOrDefault<ParagraphCustom>(ParseStartPosition);
+        //                                            if (el != null)
+        //                                            {
+
+        //                                                el.Key = pcj.Key;
+        //                                                el.Paragraph = pcj.Paragraph;
+        //                                                ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
+        //                                            }
+        //                                            else
+        //                                            {
+        //                                                collecion.Add(pcj);
+        //                                                ParagraphsCustomParseStartPosition.Paragraph = pcj.Paragraph;
+        //                                                g++;
+        //                                            }
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            collecion.Add(paragraphCustom_j);
+        //                                            g++;
+        //                                        }
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        if (ParagraphsCustomBefore != null)
+        //                                        {
+        //                                            ParagraphCustom pcj = new ParagraphCustom();
+        //                                            pcj.Clone(ParagraphsCustomBefore.Key, ParagraphsCustomBefore.Paragraph);
+        //                                            foreach (var item_run in runs_item_j)
+        //                                            {
+        //                                                var item_run_clone = (Run)item_run.Clone();
+        //                                                pcj.Paragraph.AppendChild<Run>(item_run_clone);
+        //                                            }
+        //                                            var el = collecion.ElementAtOrDefault<ParagraphCustom>(positionParagraphCustomBefore);
+        //                                            if (el != null)
+        //                                            {
+
+        //                                                el.Key = pcj.Key;
+        //                                                el.Paragraph = pcj.Paragraph;
+        //                                            }
+
+        //                                            g++;
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            collecion.Add(paragraphCustom_j);
+        //                                            g++;
+        //                                        }
+        //                                    }
+        //                                    break;
+        //                            }
+        //                        }
+        //                        else
+        //                        {
+        //                            collecion.Add(paragraphCustom_j);
+        //                            g++;
+        //                        }
+        //                    }
+        //                }
+        //            }
+
+        //            var t_paramParagraphsCustom = paramParagraphsCustom.ElementAtOrDefault<ParagraphCustom>(i);
+        //            if (t_paramParagraphsCustom != null)
+        //            {
+        //                var item = t_paramParagraphsCustom;
+        //                ParagraphCustom paragraphCustom = new ParagraphCustom();
+        //                paragraphCustom.Clone(g, item.Paragraph);
+        //                collecion.Add(paragraphCustom);
+        //            }
+        //            g++;
+        //        }
+
+        //        return collecion;
+        //    }
+        //    else
+        //    {
+        //        return paramParagraphsCustom;
+        //    }
+        //}
+
 
         //public static List<ParagraphCustom> AddChildParagraphCustom(this List<ParagraphCustom> paramParagraphsCustom, List<ParagraphCustom> paragraphsNovos, int? startPosition)
         //{
