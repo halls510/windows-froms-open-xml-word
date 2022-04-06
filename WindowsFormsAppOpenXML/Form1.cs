@@ -69,10 +69,7 @@ namespace WindowsFormsAppOpenXML
                 // para primeiro item da região sem repetição
                 foreach (var regiao in _regionCustom.Get())
                 {
-                    // List<ParagraphCustom> paragraphs = new List<ParagraphCustom>();
-                    // paragraphs = wordDocument.MainDocumentPart.Document.FindRegionAndRemoveParagraphComplex(regiao.Region);
-                    //paragraphs = ParagraphsDocumentClone.FindRegionParagraphComplex(regiao.Region);
-                    regiao.AddParagraphRangeComplex(ParagraphsDocumentClone.FindRegionParagraphComplex(regiao.Region));
+                    regiao.AddParagraphRangeComplex(ParagraphsDocumentClone.FindRegionAndRemoveParagraphComplex(regiao.Region));
 
                     int totalPessoas = regiao.Pessoas.Count();
                     int lastPessoa = totalPessoas - 1;
@@ -85,54 +82,32 @@ namespace WindowsFormsAppOpenXML
                         if (totalPessoas == 1)
                         {
                             var p = FindXml.FindReplaceRegionContentTest(regiao.ParagraphCustomFull, "<name>", pessoa.name, regiao.Region);
-                            var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
-                            var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, "full", regiao);
-                            wordDocument.MainDocumentPart.Document.RemoveParagraphs();
-                            wordDocument.MainDocumentPart.Document.AddParagraphs(papragraphsInsert);
+                            var papragraphsInsert = ParagraphsDocumentClone.AddChildParagraphCustom(p, "full", regiao);
+                            var um = 1;
                         }
                         else if (totalPessoas > 1)
                         {
                             if (i != lastPessoa && i != 0)
                             {
                                 var p = FindXml.FindReplaceRegionContentTest(regiao.ParagraphCustomMiddle, "<name>", pessoa.name, regiao.Region);
-                                //var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindPositionRegionReplaceTrue(regiao.Region);
-                                var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
-                                var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, "middle", regiao);
-                                wordDocument.MainDocumentPart.Document.RemoveParagraphs();
-                                wordDocument.MainDocumentPart.Document.AddParagraphs(papragraphsInsert);
+                                var papragraphsInsert = ParagraphsDocumentClone.AddChildParagraphCustom(p, "middle", regiao);
+                                var um = 1;
                             }
                             else if (i == 0)
                             {
                                 var p = FindXml.FindReplaceRegionContentTest(regiao.ParagraphCustomBefore, "<name>", pessoa.name, regiao.Region);
-                                //var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindRegionReplaceTrue(regiao.Region);
-                                var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
-                                // var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, regiao.PositionInitial,"before", regiao);
-                                var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, "before", regiao);
-                                wordDocument.MainDocumentPart.Document.RemoveParagraphs();
-                                wordDocument.MainDocumentPart.Document.AddParagraphs(papragraphsInsert);
+                                var papragraphsInsert = ParagraphsDocumentClone.AddChildParagraphCustom(p, "before", regiao);
+                                var um = 1;
                             }
                             else if (i == lastPessoa)
                             {
                                 var p = FindXml.FindReplaceRegionContentTest(regiao.ParagraphCustomAfter, "<name>", pessoa.name, regiao.Region);
-                                // var lastRegionReplace = wordDocument.MainDocumentPart.Document.FindPositionRegionReplaceTrue(regiao.Region);
-                                var paragraphsDocumentation = wordDocument.MainDocumentPart.Document.CloneParagraph();
-                                // var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, lastRegionReplace,"after", regiao);
-                                var papragraphsInsert = paragraphsDocumentation.AddChildParagraphCustom(p, "after", regiao);
-                                wordDocument.MainDocumentPart.Document.RemoveParagraphs();
-                                wordDocument.MainDocumentPart.Document.AddParagraphs(papragraphsInsert);
+                                var papragraphsInsert = ParagraphsDocumentClone.AddChildParagraphCustom(p, "after", regiao);
+                                var um = 1;
                             }
                         }
                     }
                 }
-
-                // remove marcação de região
-                //foreach (var regiao in _regionCustom.Get())
-                //{
-                //    // wordDocument.MainDocumentPart.Document.FindReplaceRegionTest(regiao.Region);
-                //}
-
-
-
 
                 wordDocument.Save();
                 wordDocument.Close();
